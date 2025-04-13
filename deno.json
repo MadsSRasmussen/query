@@ -1,0 +1,17 @@
+{
+    "name": "@msrass/query",
+    "version": "0.1.0",
+    "exports": {
+        ".": "./src/query/index.ts",
+        "./providers": "./src/providers/index.ts"
+    },
+    "tasks": {
+        "dev": "deno test --watch"
+    },
+    "license": "MIT",
+    "fmt": {
+        "useTabs": false,
+        "indentWidth": 4,
+        "semiColons": true
+    }
+}
