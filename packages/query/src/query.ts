@@ -7,11 +7,8 @@ import type {
     ReturnTable,
     TableColumns,
 } from "./types.ts";
-import type { DatabaseProvider } from "../providers/types.ts";
 
 export class Query<T extends Database, R = ReturnTable<T, []>> {
-    private readonly provider: DatabaseProvider<T> | null = null;
-
     public table: (keyof T) | null = null;
     public picks: Picks<T> = [];
     public wheres: [Columns<T>, Flat<T>[Columns<T>], Comparator][] = [];
@@ -21,10 +18,6 @@ export class Query<T extends Database, R = ReturnTable<T, []>> {
         Columns<T>,
         Comparator,
     ][] = [];
-
-    constructor(provider?: DatabaseProvider<T>) {
-        if (provider) this.provider = provider;
-    }
 
     select<const K extends Picks<T>>(
         ...fields: K
@@ -55,10 +48,5 @@ export class Query<T extends Database, R = ReturnTable<T, []>> {
     ): Query<T, R> {
         this.joins.push([table, first, second, comp]);
         return this;
-    }
-
-    async execute(): Promise<R[]> {
-        if (!this.provider) throw new Error("No provider");
-        return await this.provider.execute(this);
     }
 }

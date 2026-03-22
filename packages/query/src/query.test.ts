@@ -1,7 +1,7 @@
 import { Query } from "./query.ts";
-import { assertEquals, assertRejects } from "@std/assert";
+import { assertEquals } from "@std/assert";
 
-import type { TestDatabase } from "../testdata/types.ts";
+import type { TestDatabase } from "./testdata/types.ts";
 
 Deno.test("query class constructs correctly", () => {
     const query = (new Query<TestDatabase>())
@@ -46,10 +46,4 @@ Deno.test("query class overwrites and appends appropriately", () => {
         ["messages.id", 255, "<"],
         ["companies.id", 1, "="],
     ], "appends wheres");
-});
-
-Deno.test("query class errors on execute if no provider is provided", () => {
-    const query = new Query<TestDatabase>();
-
-    assertRejects(query.execute);
 });
