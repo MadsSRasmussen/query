@@ -1,7 +1,7 @@
 import { Query } from "./query.ts";
-import { assertEquals, assertRejects } from "jsr:@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 
-import type { TestDatabase } from "../test-utils/types.ts";
+import type { TestDatabase } from "../testdata/types.ts";
 
 Deno.test("query class constructs correctly", () => {
     const query = (new Query<TestDatabase>())

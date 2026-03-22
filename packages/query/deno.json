@@ -1,0 +1,16 @@
+{
+    "name": "@msrass/query",
+    "version": "0.1.0",
+    "exports": {
+        ".": "./src/query/index.ts",
+        "./providers": "./src/providers/index.ts"
+    },
+    "tasks": {
+        "dev": "deno test --watch",
+        "test": "deno test -A"
+    },
+    "license": "MIT",
+    "imports": {
+        "@std/assert": "jsr:@std/assert@^1.0.19"
+    }
+}
