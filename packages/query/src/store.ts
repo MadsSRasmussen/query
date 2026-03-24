@@ -9,7 +9,9 @@ export class Store<T extends Database, TCompiled = unknown> {
         return query.from(table);
     }
 
-    withCompiler<TCompiled>(compiler: Compiler<TCompiled>) {
+    withCompiler<TCompiled>(
+        compiler: Compiler<TCompiled>,
+    ): { query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled> } {
         return {
             query: (table: keyof T) =>
                 new Query<T, ReturnTable<T, []>, TCompiled>({
@@ -21,7 +23,7 @@ export class Store<T extends Database, TCompiled = unknown> {
     withExecutor<TCompiled>(
         compiler: Compiler<TCompiled>,
         executor: Executor<TCompiled>,
-    ) {
+    ): { query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled> } {
         return {
             query: (table: keyof T) =>
                 new Query<T, ReturnTable<T, []>, TCompiled>({

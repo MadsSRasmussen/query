@@ -1,4 +1,4 @@
-import { type CompiledMySql } from "@msrass/query/mysql";
+import type { CompiledMySql } from "@msrass/query/mysql";
 import type { CompiledQuery, Executor, QueryExecutor } from "@msrass/query";
 import type { Buffer } from "node:buffer";
 

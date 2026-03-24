@@ -33,12 +33,27 @@ Deno.test({
             const results = await store
                 .query("posts")
                 .join("users", "users.id", "posts.user_id")
-                .pick(["users.id", "user_id"], "users.name", "posts.content", "posts.id")
+                .pick(
+                    ["users.id", "user_id"],
+                    "users.name",
+                    "posts.content",
+                    "posts.id",
+                )
                 .where("users.id", 1)
                 .execute();
 
-            assertEquals(results[0], { user_id: 1, name: "root", content: "content:root:1", id: 1 });
-            assertEquals(results[1], { user_id: 1, name: "root", content: "content:root:2", id: 2 });
+            assertEquals(results[0], {
+                user_id: 1,
+                name: "root",
+                content: "content:root:1",
+                id: 1,
+            });
+            assertEquals(results[1], {
+                user_id: 1,
+                name: "root",
+                content: "content:root:2",
+                id: 2,
+            });
         });
 
         await pool.end();
