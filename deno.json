@@ -1,15 +1,23 @@
-{  
+{
     "fmt": {
         "useTabs": false,
         "indentWidth": 4,
         "semiColons": true
     },
     "tasks": {
-        "test": "deno test -A"
+        "test": "deno task test:packages",
+        "test:packages": "deno test packages",
+
+        "test:integration": "deno task test:integration:mysql2",
+        "test:integration:mysql2": "deno task -c integration/mysql2/deno.json test:integration",
+
+        "test:all": "deno task test && deno task test:integration"
     },
     "license": "MIT",
     "workspace": [
         "./packages/query",
-        "./packages/query-mysql2"
+        "./packages/query-mysql2",
+
+        "./integration/mysql2"
     ]
 }
