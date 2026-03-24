@@ -6,7 +6,7 @@ import type { TestDatabase } from "./testdata/types.ts";
 Deno.test("query class constructs correctly", () => {
     const query = (new Query<TestDatabase>())
         .from("users")
-        .select("users.id", "users.name", "messages.content")
+        .pick("users.id", "users.name", "messages.content")
         .join("messages", "messages.user_id", "users.id")
         .where("messages.id", 100, "<");
 
@@ -24,11 +24,11 @@ Deno.test("query class constructs correctly", () => {
 Deno.test("query class overwrites and appends appropriately", () => {
     const query = (new Query<TestDatabase>())
         .from("messages")
-        .select("messages.id", "messages.content")
+        .pick("messages.id", "messages.content")
         .join("messages", "messages.user_id", "users.id")
         .where("messages.id", 255, "<")
         .from("users")
-        .select("users.name", "companies.name", "messages.content")
+        .pick("users.name", "companies.name", "messages.content")
         .join("companies", "companies.id", "users.company_id")
         .where("companies.id", 1);
 

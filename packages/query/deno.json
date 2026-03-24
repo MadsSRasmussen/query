@@ -2,8 +2,8 @@
     "name": "@msrass/query",
     "version": "0.1.0",
     "exports": {
-        ".": "./src/query/index.ts",
-        "./providers": "./src/providers/index.ts"
+        ".": "./mod.ts",
+        "./mysql": "./src/compilers/mysql.ts"
     },
     "tasks": {
         "dev": "deno test --watch",
