@@ -1,0 +1,6 @@
+{
+    "publishOrder": [
+        "packages/query",
+        "packages/query-mysql2"
+    ]
+}

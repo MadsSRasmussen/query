@@ -1,3 +1,5 @@
+export type { Query } from "./query.ts";
+
 export type Comparator = "=" | "<" | ">" | ">=" | "<=" | "!=";
 export type FieldData = string | number | boolean | null;
 export type BaseTable = { [index: string]: FieldData };

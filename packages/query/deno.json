@@ -1,0 +1,16 @@
+{
+    "name": "@msrass/query",
+    "version": "0.1.0",
+    "exports": {
+        ".": "./mod.ts",
+        "./mysql": "./src/compilers/mysql.ts"
+    },
+    "tasks": {
+        "dev": "deno test --watch",
+        "test": "deno test -A"
+    },
+    "license": "MIT",
+    "imports": {
+        "@std/assert": "jsr:@std/assert@^1.0.19"
+    }
+}
