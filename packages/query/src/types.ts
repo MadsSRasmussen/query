@@ -25,7 +25,7 @@ export type BaseTable = { [index: string]: FieldData };
  * type DB = {
  *     users: { id: number, name: string };
  *     posts: { id: number, content: string, user_id: number };
- * }
+ * };
  * ```
  */
 export type Database = { [index: string]: BaseTable };
@@ -35,6 +35,11 @@ export type Database = { [index: string]: BaseTable };
  *
  * @example
  * ```ts
+ * type DB = {
+ *     users: { id: number, name: string };
+ *     posts: { id: number, content: string, user_id: number };
+ * };
+ *
  * type C = Columns<DB>; // 'users.id' | 'users.name' | 'posts.id' | ...
  * ```
  */

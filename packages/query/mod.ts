@@ -5,7 +5,7 @@
  * @example
  * ```ts
  * import { Store } from "@msrass/query";
- * import { MySqlCompiler } from "@msrass/query";
+ * import { MySqlCompiler } from "@msrass/query/mysql";
  *
  * type PostsStore = {
  *     users: { id: number, name: string };
@@ -14,7 +14,7 @@
  *
  * const posts = new Store<PostsStore>().withCompiler(new MySqlCompiler());
  *
- * const query = store.query('posts')
+ * const query = posts.query('posts')
  *     .join('users', 'users.id', 'posts.user_id')
  *     .pick(['users.id', 'user_id'], 'users.name', 'posts.content', 'posts.id')
  *     .where('users.id', 1);

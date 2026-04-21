@@ -83,7 +83,7 @@ export type QueryConfig<
  * @example
  * ```ts
  * const query = new Query<{ users: { id: number, name: string } }>()
- *     .from('users) // The main table to query from
+ *     .from('users') // The main table to query from
  *     .pick('users.id', 'users.name') // The picks from any joined table
  *     .where('users.id', 1); // A clause narrowing the result
  * ```
