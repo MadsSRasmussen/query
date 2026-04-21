@@ -23,9 +23,19 @@
  * @module
  */
 
-export { Store } from "./src/store.ts";
+/* Regular exports */
 
-export * from "./src/types.ts";
+export { Store } from "./src/store.ts";
+export { Query } from "./src/query.ts";
+
+/* Type exports */
+
+export type {
+    BaseTable,
+    Comparator,
+    Database,
+    FieldData,
+} from "./src/types.ts";
 
 export type { CompiledQuery, QueryExecutor } from "./src/query.ts";
 
