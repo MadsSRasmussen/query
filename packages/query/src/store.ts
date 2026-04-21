@@ -21,7 +21,7 @@ export class Store<T extends Database, TCompiled = unknown> {
     constructor() {}
 
     /**
-     * Create a `Query` instance querying from the base table specified.
+     * Create a `Query` instance that queries from the specified base table.
      * @param table The name of the base table to query from.
      */
     query(table: keyof T): Query<T, ReturnTable<T, []>, TCompiled> {
@@ -30,7 +30,7 @@ export class Store<T extends Database, TCompiled = unknown> {
     }
 
     /**
-     * Return a newly typed instance of `Store` with a specified compiler.
+     * Returns a newly typed instance of `Store` with a specified compiler.
      * This ensures correct type inference of compiled queries.
      * @param compiler The compiler to use with the instance.
      */

@@ -1,7 +1,7 @@
 export type { Query } from "./query.ts";
 
 /**
- * Supported comparisson operations for clauses.
+ * Supported comparison operations for clauses.
  */
 export type Comparator = "=" | "<" | ">" | ">=" | "<=" | "!=";
 

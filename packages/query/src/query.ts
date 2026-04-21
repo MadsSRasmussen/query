@@ -78,7 +78,7 @@ export type QueryConfig<
 
 /**
  * A class which enables the construction of queries.
- * These queries can then later be transformed into concrete sql and executed.
+ * These queries can later be transformed into concrete SQL and executed.
  *
  * @example
  * ```ts
@@ -111,7 +111,7 @@ export class Query<
 
     /**
      * Create a new `Query` instance.
-     * Optionally include a compiler and an executor in the configuration passed in the constructor.
+     * Optionally include a compiler and an executor in the configuration passed to the constructor.
      * @param [config={}] The query configuration. Include a compiler and executor here.
      */
     constructor(config: Partial<QueryConfig<TCompiled>> = {}) {
@@ -177,7 +177,7 @@ export class Query<
     }
 
     /**
-     * Compile the query with the compiler associated with this perticular `Query` instance.
+     * Compile the query with the compiler associated with this particular `Query` instance.
      */
     compile(): CompiledQuery<TCompiled, R> {
         if (!this.config.compiler) throw new Error("No compiler specified");
@@ -185,7 +185,7 @@ export class Query<
     }
 
     /**
-     * Compile and execute the query with the compiler and executor associated with this perticular `Query` instance.
+     * Compile and execute the query with the compiler and executor associated with this particular `Query` instance.
      */
     async execute(): Promise<R[]> {
         if (!this.config.executor) throw new Error("No executor specified");

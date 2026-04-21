@@ -1,6 +1,6 @@
 /**
  * This module contains the basic structures of the query package.
- * It does not provide the ability to execute any compiled mysql. For this execution adapters must be used.
+ * It does not provide the ability to execute any compiled MySQL. For this, execution adapters must be used.
  *
  * @example
  * ```ts
