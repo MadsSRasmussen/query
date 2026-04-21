@@ -13,6 +13,9 @@ export type CompiledMySql = {
     params: SqlValues[];
 };
 
+/**
+ * MySQL compiler to translate inputs into executable SQL syntax.
+ */
 export class MySqlCompiler implements Compiler<CompiledMySql> {
     public compileQuery: QueryCompiler<CompiledMySql> = ((query) => {
         const queryBits = [];
