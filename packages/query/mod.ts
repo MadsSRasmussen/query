@@ -1,3 +1,28 @@
+/**
+ * This module contains the basic structures of the query package.
+ * It does not provide the ability to execute any compiled mysql. For this execution adapters must be used.
+ *
+ * @example
+ * ```ts
+ * import { Store } from "@msrass/query";
+ * import { MySqlCompiler } from "@msrass/query";
+ *
+ * type PostsStore = {
+ *     users: { id: number, name: string };
+ *     posts: { id: number, content: string, user_id: number };
+ * }
+ *
+ * const posts = new Store<PostsStore>().withCompiler(new MySqlCompiler());
+ *
+ * const query = store.query('posts')
+ *     .join('users', 'users.id', 'posts.user_id')
+ *     .pick(['users.id', 'user_id'], 'users.name', 'posts.content', 'posts.id')
+ *     .where('users.id', 1);
+ * ```
+ *
+ * @module
+ */
+
 export { Store } from "./src/store.ts";
 
 export * from "./src/types.ts";
