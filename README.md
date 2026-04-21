@@ -29,8 +29,8 @@ users to construct queries.
 import { Store } from "@msrass/query";
 
 type Database = {
-    users: { id: int; name: string };
-    posts: { id: int; content: string; user_id: int };
+    users: { id: number; name: string };
+    posts: { id: number; content: string; user_id: number };
 };
 
 const store = new Store<Database>();
@@ -56,8 +56,8 @@ import { MySql2Executor } from "@msrass/query-mysql2";
 import mysql2 from "mysql2/promise";
 
 type Database = {
-    users: { id: int; name: string };
-    posts: { id: int; content: string; user_id: int };
+    users: { id: number; name: string };
+    posts: { id: number; content: string; user_id: number };
 };
 
 const compiler = new MySqlCompiler();
