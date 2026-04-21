@@ -1,3 +1,23 @@
+/**
+ * MySQL-specific implementations module.
+ *
+ * @example
+ * ```ts
+ * import { Store } from '@msrass/query';
+ * import { MySqlCompiler } from '@msrass/query/mysql';
+ *
+ * type Database = {
+ *     users: { id: number; name: string };
+ *     posts: { id: number; content: string; user_id: number };
+ * };
+ *
+ * const store = new Store<Database>().withCompiler(new MySqlCompiler());
+ * const compiled = store.query('users').pick('users.id').compile();
+ * ```
+ *
+ * @module mysql
+ */
+
 import type { Buffer } from "node:buffer";
 import type { QueryCompiler } from "../query.ts";
 import type { Compiler } from "./types.ts";
@@ -13,6 +33,9 @@ export type CompiledMySql = {
     params: SqlValues[];
 };
 
+/**
+ * MySQL compiler to translate inputs into executable SQL syntax.
+ */
 export class MySqlCompiler implements Compiler<CompiledMySql> {
     public compileQuery: QueryCompiler<CompiledMySql> = ((query) => {
         const queryBits = [];
