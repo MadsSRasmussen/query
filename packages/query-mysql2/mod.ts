@@ -1,5 +1,4 @@
 /**
- * @example
  * ```ts
  * import { Store } from "@msrass/query";
  *
@@ -41,7 +40,12 @@
  */
 
 import type { CompiledMySql } from "@msrass/query/mysql";
-import type { CompiledQuery, Executor, QueryExecutor } from "@msrass/query";
+import type {
+    CompiledQuery,
+    Executor,
+    QueryExecutor,
+    WriteExecutor,
+} from "@msrass/query";
 import type { Buffer } from "node:buffer";
 
 type SqlPrimitive = string | number | boolean | null | Buffer | Date;
@@ -57,6 +61,10 @@ interface MySql2PoolConnection {
     release(): void;
     query(sql: string, values?: SqlValues[]): Promise<[unknown, unknown]>;
 }
+
+type MySql2WriteRes = {
+    id: unknown;
+};
 
 /**
  * MySQL execution adapter for the npm:mysql2/promise package.
@@ -76,7 +84,7 @@ interface MySql2PoolConnection {
  * const executor = new MySql2Executor(pool);
  * ```
  */
-export class MySql2Executor implements Executor<CompiledMySql> {
+export class MySql2Executor implements Executor<CompiledMySql, MySql2WriteRes> {
     private pool: MySql2Pool;
 
     constructor(pool: MySql2Pool) {
@@ -86,10 +94,20 @@ export class MySql2Executor implements Executor<CompiledMySql> {
     public executeQuery: QueryExecutor<CompiledMySql> = async <R>(
         compiled: CompiledQuery<CompiledMySql, R>,
     ) => {
-        const [rows] = await this.pool.query(compiled.query, compiled.params);
+        const [rows] = await this.pool.query(compiled.sql, compiled.params);
 
         return rows as unknown as typeof compiled extends
             CompiledQuery<CompiledMySql, infer R> ? R[]
             : never;
+    };
+
+    public executeWrite: WriteExecutor<CompiledMySql, MySql2WriteRes> = async (
+        compiled,
+    ) => {
+        const [res] = await this.pool.execute(compiled.sql, compiled.params);
+
+        return {
+            id: (res as unknown as { insertId: number }).insertId,
+        };
     };
 }
