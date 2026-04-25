@@ -2,6 +2,9 @@
 
 Query is a typesafe query builder with adapters for database connectors.
 
+_The library is still early in development – api's may contain breaking changes
+in all updates until v1.0.0 is reached._
+
 ## Table of Contents
 
 - [Description](#description)
@@ -73,11 +76,19 @@ const executor = new MySql2Executor(pool);
 
 const store = new Store<Database>().withExecutor(compiler, executor);
 
+// Insert a post
+const write = store.insert("posts").one({
+    id: 1,
+    name: "John",
+});
+
+const res = await write.execute();
+
 // Query posts
 const query = store.query("posts")
     .join("users", "users.id", "posts.user_id")
     .pick(["users.id", "user_id"], "users.name", "posts.content", "posts.id")
-    .where("users.id", 1);
+    .where("users.id", res.id);
 
 // Now the query can be executed with:
 const posts = await query.execute();

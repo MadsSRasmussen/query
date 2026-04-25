@@ -1,5 +1,9 @@
 export type { Query } from "./query.ts";
 
+export type UnionToIntersection<U> =
+    (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void
+        ? I
+        : never;
 /**
  * Supported comparison operations for clauses.
  */

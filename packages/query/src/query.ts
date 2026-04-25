@@ -59,13 +59,8 @@ export type QueryExecutor<
 ) => Promise<R[]>;
 
 /**
- * Configuration for attaching execution capabilities to a `Store`.
- *
- * A query can only be executed if both:
- * - a compiler (to transform the query)
- * - an executor (to run it)
- *
- * are provided.
+ * Configuration for attaching execution capabilities to a `Query`.
+ * Both a compiler and an executor must be provided for execution.
  *
  * @typeParam TCompiled - The compiled query format shared between compiler and executor
  */
@@ -73,14 +68,13 @@ export type QueryConfig<
     TCompiled = unknown,
 > = {
     compiler?: Compiler<TCompiled>;
-    executor?: Executor<TCompiled>;
+    executor?: Executor<TCompiled, unknown>;
 };
 
 /**
  * A class which enables the construction of queries.
  * These queries can later be transformed into concrete SQL and executed.
  *
- * @example
  * ```ts
  * const query = new Query<{ users: { id: number, name: string } }>()
  *     .from('users') // The main table to query from
@@ -95,7 +89,7 @@ export class Query<
 > {
     private config: QueryConfig<TCompiled> = {};
 
-    /** The list of table names that are to be selected. */
+    /** The base table to query from. */
     public table: (keyof T) | null = null;
     /** The fields that are to be selected in the query. */
     public picks: Picks<T> = [];
