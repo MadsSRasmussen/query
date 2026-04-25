@@ -2,7 +2,6 @@
  * This module contains the basic structures of the query package.
  * It does not provide the ability to execute any compiled MySQL. For this, execution adapters must be used.
  *
- * @example
  * ```ts
  * import { Store } from "@msrass/query";
  * import { MySqlCompiler } from "@msrass/query/mysql";
@@ -38,6 +37,7 @@ export type {
 } from "./src/types.ts";
 
 export type { CompiledQuery, QueryExecutor } from "./src/query.ts";
+export type { WriteExecutor } from "./src/write.ts";
 
 export type { Executor } from "./src/executor.ts";
 export type { Compiler } from "./src/compilers/types.ts";

@@ -20,6 +20,7 @@
 
 import type { Buffer } from "node:buffer";
 import type { QueryCompiler } from "../query.ts";
+import type { WriteCompiler } from "../write.ts";
 import type { Compiler } from "./types.ts";
 
 export type SqlPrimitive = string | number | boolean | null | Buffer | Date;
@@ -29,7 +30,7 @@ export type SqlValues =
     | Record<string, SqlPrimitive>;
 
 export type CompiledMySql = {
-    query: string;
+    sql: string;
     params: SqlValues[];
 };
 
@@ -86,8 +87,56 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
         }
 
         return {
-            query: queryBits.join("\n"),
+            sql: queryBits.join("\n"),
             params: params as SqlValues[],
+        };
+    });
+
+    public compileWrite: WriteCompiler<CompiledMySql> = ((write) => {
+        const writeBits = [];
+
+        if (write.data === null) {
+            throw new Error("No data associated with Write instance");
+        }
+
+        const insert = `INSERT INTO ${this.quote(String(write.table))}`;
+        const keys = Array.isArray(write.data)
+            ? Object.keys(write.data[0])
+            : Object.keys(write.data);
+        writeBits.push(
+            `${insert} (${keys.map((key) => this.quote(key)).join(", ")})`,
+        );
+
+        if (!Array.isArray(write.data) && write.data !== null) {
+            const values = `VALUES (${keys.map((_) => "?").join(", ")})`;
+            writeBits.push(values);
+        } else {
+            const vals = write.data.map(() =>
+                `(${keys.map(() => "?").join(", ")})`
+            );
+            writeBits.push(`VALUES\n${vals.join(",\n")}`);
+        }
+
+        if (write.method == "upsert") {
+            writeBits.push("ON DUPLICATE KEY UPDATE");
+            const updates = keys.map((key) =>
+                `${key} = VALUES(${this.quote(key)})`
+            );
+            writeBits.push(updates.join(",\n"));
+        }
+
+        let params: unknown[] = [];
+
+        if (Array.isArray(write.data)) {
+            params = write.data.map((d) => keys.map((key) => d[key])).flat();
+        } else {
+            const data = write.data as Record<string, unknown>;
+            params = keys.map((key) => data[key]);
+        }
+
+        return {
+            sql: writeBits.join("\n"),
+            params: params.flat() as SqlValues[],
         };
     });
 

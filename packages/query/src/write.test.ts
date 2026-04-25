@@ -9,7 +9,7 @@ Deno.test("Write class constructs single write", () => {
         .one({ id: 1, name: "Foo" });
 
     assertEquals(write.table, "users");
-    assertEquals(write.data, { id: 1, name: "Bar" });
+    assertEquals(write.data, { id: 1, name: "Foo" });
     assertEquals(write.method, "insert");
 });
 
