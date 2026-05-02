@@ -4,6 +4,7 @@ import type { Compiler } from "./compilers/types.ts";
 import { Query } from "./query.ts";
 import { Write } from "./write.ts";
 import { Update } from "./update.ts";
+import { Delete } from "./delete.ts";
 
 import type { Executor } from "@msrass/query";
 
@@ -67,6 +68,9 @@ export class Store<
         update: <TTB extends keyof T>(
             table: TTB,
         ) => Update<T, TCompiled, unknown, TTB>;
+        delete: <TTB extends keyof T>(
+            table: TTB,
+        ) => Delete<T, TCompiled, unknown, TTB>;
     } {
         return {
             query: (table: keyof T) =>
@@ -85,6 +89,8 @@ export class Store<
                 }).into(table),
             update: <TTB extends keyof T>(table: TTB) =>
                 new Update<T, TCompiled>({ compiler }).into(table),
+            delete: <TTB extends keyof T>(table: TTB) =>
+                new Delete<T, TCompiled>({ compiler }).from(table),
         };
     }
 
@@ -104,6 +110,9 @@ export class Store<
         update: <TTB extends keyof T>(
             table: TTB,
         ) => Update<T, TCompiled, TExecRes, TTB>;
+        delete: <TTB extends keyof T>(
+            table: TTB,
+        ) => Delete<T, TCompiled, TExecRes, TTB>;
     } {
         return {
             query: (table: keyof T) =>
@@ -128,6 +137,11 @@ export class Store<
                     compiler,
                     executor,
                 }).into(table),
+            delete: <TTB extends keyof T>(table: TTB) =>
+                new Delete<T, TCompiled, TExecRes, TTB>({
+                    compiler,
+                    executor,
+                }).from(table),
         };
     }
 }

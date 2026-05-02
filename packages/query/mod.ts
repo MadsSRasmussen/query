@@ -27,6 +27,7 @@
 export { Store } from "./src/store.ts";
 export { Query } from "./src/query.ts";
 export { Write } from "./src/write.ts";
+export { Delete } from "./src/delete.ts";
 
 /* Type exports */
 
@@ -40,6 +41,7 @@ export type {
 export type { CompiledQuery, QueryExecutor } from "./src/query.ts";
 export type { WriteExecutor } from "./src/write.ts";
 export type { UpdateExecutor } from "./src/update.ts";
+export type { DeleteExecutor } from "./src/delete.ts";
 
 export type { Executor } from "./src/executor.ts";
 export type { Compiler } from "./src/compilers/types.ts";

@@ -1,6 +1,7 @@
 import type { QueryExecutor } from "./query.ts";
 import type { WriteExecutor } from "./write.ts";
 import type { UpdateExecutor } from "./update.ts";
+import type { DeleteExecutor } from "./delete.ts";
 
 /**
  * An interface for executable implementations.
@@ -18,4 +19,7 @@ export interface Executor<
 
     /** A method to execute an update */
     executeUpdate: UpdateExecutor<Compiled, ExecRes>;
+
+    /** A method to execute a delete */
+    executeDelete: DeleteExecutor<Compiled, ExecRes>;
 }

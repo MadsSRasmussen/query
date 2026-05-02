@@ -22,6 +22,7 @@ import type { Buffer } from "node:buffer";
 import type { QueryCompiler } from "../query.ts";
 import type { WriteCompiler } from "../write.ts";
 import type { UpdateCompiler } from "../update.ts";
+import type { DeleteCompiler } from "../delete.ts";
 import type { Compiler } from "./types.ts";
 
 export type SqlPrimitive = string | number | boolean | null | Buffer | Date;
@@ -164,6 +165,24 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
 
         return {
             sql: updateBits.join("\n"),
+            params: params as SqlValues[],
+        };
+    });
+
+    public compileDelete: DeleteCompiler<CompiledMySql> = ((del) => {
+        const deleteBits = [];
+
+        deleteBits.push(`DELETE FROM ${this.quote(String(del.table))}`);
+
+        let params: unknown[] = [];
+        if (del.wheres.length) {
+            const [wheres, whereParams] = this.wheres(del.wheres);
+            deleteBits.push(wheres);
+            params = params.concat(whereParams);
+        }
+
+        return {
+            sql: deleteBits.join("\n"),
             params: params as SqlValues[],
         };
     });

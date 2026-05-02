@@ -158,10 +158,30 @@ SET \`users\`.\`name\` = ?, \`users\`.\`email\` = ?
 WHERE \`users\`.\`id\` = ?
 `.trim();
 
-    assertEquals(compiled.sql, expected, "compiled mysql write correctly");
+    assertEquals(compiled.sql, expected, "compiled mysql update correctly");
     assertEquals(
         compiled.params,
         ["Jorge", "mail@example.com", 1],
+        "assembles params correctly",
+    );
+});
+
+Deno.test("MySqlCompiler handles delete", () => {
+    const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
+
+    const del = store.delete("users").where("users.id", 1);
+
+    const compiled = del.compile();
+
+    const expected = `
+DELETE FROM \`users\`
+WHERE \`users\`.\`id\` = ?
+    `.trim();
+
+    assertEquals(compiled.sql, expected, "compiled mysql delete correctly");
+    assertEquals(
+        compiled.params,
+        [1],
         "assembles params correctly",
     );
 });
