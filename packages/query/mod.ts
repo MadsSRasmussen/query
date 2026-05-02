@@ -26,6 +26,7 @@
 
 export { Store } from "./src/store.ts";
 export { Query } from "./src/query.ts";
+export { Write } from "./src/write.ts";
 
 /* Type exports */
 
