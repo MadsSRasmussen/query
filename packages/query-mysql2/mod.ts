@@ -44,6 +44,7 @@ import type {
     CompiledQuery,
     Executor,
     QueryExecutor,
+    UpdateExecutor,
     WriteExecutor,
 } from "@msrass/query";
 import type { Buffer } from "node:buffer";
@@ -62,8 +63,9 @@ interface MySql2PoolConnection {
     query(sql: string, values?: SqlValues[]): Promise<[unknown, unknown]>;
 }
 
-type MySql2WriteRes = {
+type MySql2ExecRes = {
     id: unknown;
+    affected: number;
 };
 
 /**
@@ -84,7 +86,7 @@ type MySql2WriteRes = {
  * const executor = new MySql2Executor(pool);
  * ```
  */
-export class MySql2Executor implements Executor<CompiledMySql, MySql2WriteRes> {
+export class MySql2Executor implements Executor<CompiledMySql, MySql2ExecRes> {
     private pool: MySql2Pool;
 
     constructor(pool: MySql2Pool) {
@@ -101,13 +103,28 @@ export class MySql2Executor implements Executor<CompiledMySql, MySql2WriteRes> {
             : never;
     };
 
-    public executeWrite: WriteExecutor<CompiledMySql, MySql2WriteRes> = async (
+    public executeWrite: WriteExecutor<CompiledMySql, MySql2ExecRes> = async (
         compiled,
     ) => {
         const [res] = await this.pool.execute(compiled.sql, compiled.params);
 
         return {
             id: (res as unknown as { insertId: number }).insertId,
+            affected: (res as unknown as { affectedRows: number }).affectedRows,
+        };
+    };
+
+    public executeUpdate: UpdateExecutor<CompiledMySql, MySql2ExecRes> = async (
+        compiled,
+    ) => {
+        const [res] = await this.pool.execute(
+            compiled.sql,
+            compiled.params,
+        );
+
+        return {
+            id: (res as unknown as { insertId: number }).insertId,
+            affected: (res as unknown as { affectedRows: number }).affectedRows,
         };
     };
 }
