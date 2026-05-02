@@ -113,3 +113,55 @@ name = VALUES(\`name\`)
         "assembles params correctly",
     );
 });
+
+Deno.test("MySqlCompiler handles updates single field", () => {
+    const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
+
+    const update = store.update("users").set({
+        name: "Jorge",
+    }).where(
+        "users.id",
+        1,
+    );
+
+    const compiled = update.compile();
+
+    const expected = `
+UPDATE \`users\`
+SET \`users\`.\`name\` = ?
+WHERE \`users\`.\`id\` = ?
+`.trim();
+
+    assertEquals(compiled.sql, expected, "compiled mysql write correctly");
+    assertEquals(
+        compiled.params,
+        ["Jorge", 1],
+        "assembles params correctly",
+    );
+});
+Deno.test("MySqlCompiler handles updates multiple fields", () => {
+    const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
+
+    const update = store.update("users").set({
+        name: "Jorge",
+        email: "mail@example.com",
+    }).where(
+        "users.id",
+        1,
+    );
+
+    const compiled = update.compile();
+
+    const expected = `
+UPDATE \`users\`
+SET \`users\`.\`name\` = ?, \`users\`.\`email\` = ?
+WHERE \`users\`.\`id\` = ?
+`.trim();
+
+    assertEquals(compiled.sql, expected, "compiled mysql write correctly");
+    assertEquals(
+        compiled.params,
+        ["Jorge", "mail@example.com", 1],
+        "assembles params correctly",
+    );
+});

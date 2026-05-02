@@ -95,11 +95,14 @@ Deno.test({
             assertEquals(last, { id: 99, content: "content:2", user_id: 2 });
         });
 
+        let pid: number;
         await t.step("upsert post", async () => {
             const firstRes = await store.upsert("posts").one({
                 content: "content:1",
                 user_id: 1,
             }).execute();
+
+            pid = firstRes.id as number;
 
             const lastRes = await store.upsert("posts").one({
                 id: firstRes.id as number,
@@ -116,6 +119,32 @@ Deno.test({
 
             assertEquals(post.content, "content:1:updated");
             assertEquals(post.user_id, 2);
+        });
+
+        await t.step("update post", async () => {
+            const res = await store.update("posts")
+                .set({ content: "updated:unique" })
+                .where("posts.id", pid)
+                .execute();
+
+            assertEquals(res.affected, 1);
+
+            const [post] = await store.query("posts")
+                .pick("posts.content")
+                .where("posts.id", pid)
+                .execute();
+
+            assertEquals(post.content, "updated:unique");
+
+            // Ensure records with id != pid are untouched
+            const posts = await store.query("posts")
+                .pick("posts.id", "posts.content")
+                .execute();
+
+            const none = posts.filter((post) => post.id != pid).filter((post) =>
+                post.content == "updated:unique"
+            );
+            assertEquals(none.length, 0);
         });
 
         await pool.end();

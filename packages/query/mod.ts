@@ -39,6 +39,7 @@ export type {
 
 export type { CompiledQuery, QueryExecutor } from "./src/query.ts";
 export type { WriteExecutor } from "./src/write.ts";
+export type { UpdateExecutor } from "./src/update.ts";
 
 export type { Executor } from "./src/executor.ts";
 export type { Compiler } from "./src/compilers/types.ts";
