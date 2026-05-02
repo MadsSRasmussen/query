@@ -1,4 +1,5 @@
 import type { Compiler } from "./compilers/types.ts";
+import { NoClauseError } from "./errors.ts";
 import type { Executor } from "./executor.ts";
 import type { Comparator, Database, Flat, TableColumns } from "./types.ts";
 
@@ -66,6 +67,7 @@ export class Update<
     TB extends keyof DB = keyof DB,
 > {
     private config: UpdateConfig<TCompiled, R> = {};
+    private ignoreMissingClause = false;
 
     /** The base table to write to. */
     public table: (keyof DB) | null = null;
@@ -126,9 +128,25 @@ export class Update<
     }
 
     /**
+     * Explicitly ignore no clauses.
+     *
+     * This avoids the safety mechanism, not letting an update compile,
+     * if no where clauses are set.
+     */
+    explicitNoClause(): Update<DB, TCompiled, R, TB> {
+        this.ignoreMissingClause = true;
+        return this;
+    }
+
+    /**
      * Compile the update with the compiler associated with the `Update` instance.
      */
     compile(): TCompiled {
+        if (this.wheres.length == 0 && !this.ignoreMissingClause) {
+            throw new NoClauseError(
+                "No clause specified and explicitNoClause is not set",
+            );
+        }
         if (!this.config.compiler) throw new Error("No compiler specified");
         return this.config.compiler.compileUpdate(this);
     }
