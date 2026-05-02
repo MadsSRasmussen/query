@@ -3,6 +3,7 @@ import type { Compiler } from "./compilers/types.ts";
 
 import { Query } from "./query.ts";
 import { Write } from "./write.ts";
+import { Update } from "./update.ts";
 
 import type { Executor } from "@msrass/query";
 
@@ -63,6 +64,9 @@ export class Store<
         query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled>;
         insert: (table: keyof T) => Write<T, TCompiled>;
         upsert: (table: keyof T) => Write<T, TCompiled>;
+        update: <TTB extends keyof T>(
+            table: TTB,
+        ) => Update<T, TCompiled, unknown, TTB>;
     } {
         return {
             query: (table: keyof T) =>
@@ -79,6 +83,8 @@ export class Store<
                     method: "upsert",
                     compiler,
                 }).into(table),
+            update: <TTB extends keyof T>(table: TTB) =>
+                new Update<T, TCompiled>({ compiler }).into(table),
         };
     }
 
@@ -88,13 +94,16 @@ export class Store<
      * @param compiler The compiler to use with the instance.
      * @param executor The executor to use with the instance.
      */
-    withExecutor<TCompiled, TWriteRes>(
+    withExecutor<TCompiled, TExecRes>(
         compiler: Compiler<TCompiled>,
-        executor: Executor<TCompiled, TWriteRes>,
+        executor: Executor<TCompiled, TExecRes>,
     ): {
         query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled>;
-        insert: (table: keyof T) => Write<T, TCompiled, TWriteRes>;
-        upsert: (table: keyof T) => Write<T, TCompiled, TWriteRes>;
+        insert: (table: keyof T) => Write<T, TCompiled, TExecRes>;
+        upsert: (table: keyof T) => Write<T, TCompiled, TExecRes>;
+        update: <TTB extends keyof T>(
+            table: TTB,
+        ) => Update<T, TCompiled, TExecRes, TTB>;
     } {
         return {
             query: (table: keyof T) =>
@@ -103,14 +112,19 @@ export class Store<
                     executor,
                 }).from(table),
             insert: (table: keyof T) =>
-                new Write<T, TCompiled, TWriteRes>({
+                new Write<T, TCompiled, TExecRes>({
                     method: "insert",
                     compiler,
                     executor,
                 }).into(table),
             upsert: (table: keyof T) =>
-                new Write<T, TCompiled, TWriteRes>({
+                new Write<T, TCompiled, TExecRes>({
                     method: "upsert",
+                    compiler,
+                    executor,
+                }).into(table),
+            update: <TTB extends keyof T>(table: TTB) =>
+                new Update<T, TCompiled, TExecRes, TTB>({
                     compiler,
                     executor,
                 }).into(table),
