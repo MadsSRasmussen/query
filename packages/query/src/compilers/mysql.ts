@@ -21,6 +21,7 @@
 import type { Buffer } from "node:buffer";
 import type { QueryCompiler } from "../query.ts";
 import type { WriteCompiler } from "../write.ts";
+import type { UpdateCompiler } from "../update.ts";
 import type { Compiler } from "./types.ts";
 
 export type SqlPrimitive = string | number | boolean | null | Buffer | Date;
@@ -69,20 +70,12 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
             queryBits.push(joins);
         }
 
-        const params: unknown[] = [];
+        let params: unknown[] = [];
         if (query.wheres.length) {
-            const clauses = query.wheres.map(([col, val, comp]) => {
-                if (val === null) {
-                    return `${this.quoteCol(col)} IS ${
-                        comp === "!=" ? "NOT" : ""
-                    } NULL`;
-                }
-
-                params.push(val);
-                return `${this.quoteCol(col)} ${comp} ?`;
-            });
-
-            const wheres = `WHERE ${clauses.join("\nAND ")}`;
+            const [wheres, whereParams] = this.wheres(
+                query.wheres,
+            );
+            params = params.concat(whereParams);
             queryBits.push(wheres);
         }
 
@@ -140,6 +133,41 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
         };
     });
 
+    public compileUpdate: UpdateCompiler<CompiledMySql> = ((update) => {
+        const updateBits = [];
+
+        if (update.data === null) {
+            throw new Error("No data associated with Update instance");
+        }
+
+        updateBits.push(`UPDATE ${this.quote(String(update.table))}`);
+
+        const keys = Object.keys(update.data);
+        updateBits.push(
+            `SET ${
+                keys.map((key) =>
+                    `${this.quote(String(update.table))}.${this.quote(key)} = ?`
+                ).join(", ")
+            }`,
+        );
+
+        let params: unknown[];
+
+        const data = update.data as Record<string, unknown>;
+        params = keys.map((key) => data[key]);
+
+        if (update.wheres.length) {
+            const [wheres, whereParams] = this.wheres(update.wheres);
+            updateBits.push(wheres);
+            params = params.concat(whereParams);
+        }
+
+        return {
+            sql: updateBits.join("\n"),
+            params: params as SqlValues[],
+        };
+    });
+
     private quote(input: string): string {
         return `\`${input}\``;
     }
@@ -147,5 +175,25 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
     private quoteCol(input: string): string {
         const [table, col] = input.split(".");
         return `${this.quote(table)}.${this.quote(col)}`;
+    }
+
+    private wheres(
+        clauses: [unknown, unknown, unknown][],
+    ): [string, unknown[]] {
+        const params: unknown[] = [];
+        const sqlClauses = clauses.map(([col, val, comp]) => {
+            if (val === null) {
+                return `${this.quoteCol(col as string)} IS ${
+                    comp === "!=" ? "NOT" : ""
+                } NULL`;
+            }
+
+            params.push(val);
+            return `${this.quoteCol(col as string)} ${comp} ?`;
+        });
+
+        const wheres = `WHERE ${sqlClauses.join("\nAND ")}`;
+
+        return [wheres, params];
     }
 }
