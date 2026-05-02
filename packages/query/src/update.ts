@@ -72,7 +72,7 @@ export class Update<
     /** The base table to write to. */
     public table: (keyof DB) | null = null;
 
-    /** The list of where clauses to be applied to the query. */
+    /** The list of where clauses to be applied to the update. */
     public wheres: [
         TableColumns<DB, TB>,
         Flat<DB>[TableColumns<DB, TB>],
