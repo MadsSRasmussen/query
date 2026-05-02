@@ -42,6 +42,7 @@
 import type { CompiledMySql } from "@msrass/query/mysql";
 import type {
     CompiledQuery,
+    DeleteExecutor,
     Executor,
     QueryExecutor,
     UpdateExecutor,
@@ -115,6 +116,20 @@ export class MySql2Executor implements Executor<CompiledMySql, MySql2ExecRes> {
     };
 
     public executeUpdate: UpdateExecutor<CompiledMySql, MySql2ExecRes> = async (
+        compiled,
+    ) => {
+        const [res] = await this.pool.execute(
+            compiled.sql,
+            compiled.params,
+        );
+
+        return {
+            id: (res as unknown as { insertId: number }).insertId,
+            affected: (res as unknown as { affectedRows: number }).affectedRows,
+        };
+    };
+
+    public executeDelete: DeleteExecutor<CompiledMySql, MySql2ExecRes> = async (
         compiled,
     ) => {
         const [res] = await this.pool.execute(

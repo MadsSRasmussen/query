@@ -147,6 +147,14 @@ Deno.test({
             assertEquals(none.length, 0);
         });
 
+        await t.step("delete post", async () => {
+            const res = await store.delete("posts")
+                .where("posts.id", pid)
+                .execute();
+
+            assertEquals(res.affected, 1);
+        });
+
         await pool.end();
     },
     sanitizeResources: false,
