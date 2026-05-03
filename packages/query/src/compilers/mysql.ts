@@ -28,8 +28,8 @@ import type { Compiler } from "./types.ts";
 export type SqlPrimitive = string | number | boolean | null | Buffer | Date;
 export type SqlValues =
     | SqlPrimitive
-    | SqlPrimitive[]
-    | Record<string, SqlPrimitive>;
+    | { [index: string]: SqlValues }
+    | SqlValues[];
 
 export type CompiledMySql = {
     sql: string;

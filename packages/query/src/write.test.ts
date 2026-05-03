@@ -30,3 +30,16 @@ Deno.test("Write class constructrs array write", () => {
         { id: 2, name: "Bar" },
     ]);
 });
+
+Deno.test("Write class writes JSON fields", () => {
+    const write = (new Write<TestDatabase>())
+        .into("metadata")
+        .one({
+            data: {
+                version: 1,
+                kind: "test",
+            },
+        });
+
+    assertEquals(write.data, { data: { version: 1, kind: "test" } });
+});

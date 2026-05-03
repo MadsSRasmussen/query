@@ -17,4 +17,11 @@ CREATE TABLE posts (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+DROP TABLE IF EXISTS metadata;
+CREATE TABLE metadata (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data JSON,
+    user_id INT NOT NULL
+);
+
 COMMIT;

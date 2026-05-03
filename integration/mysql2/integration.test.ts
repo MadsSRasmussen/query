@@ -155,6 +155,28 @@ Deno.test({
             assertEquals(res.affected, 1);
         });
 
+        await t.step("handles json fields", async () => {
+            const data = {
+                version: 1,
+                kind: "test",
+            };
+
+            const res = await store.insert("metadata")
+                .one({ user_id: 1, data: data })
+                .execute();
+
+            const [metadata] = await store.query("metadata")
+                .pick("metadata.id", "metadata.user_id", "metadata.data")
+                .where("metadata.id", res.id)
+                .execute();
+
+            assertEquals(metadata, {
+                id: res.id as number,
+                data: data,
+                user_id: 1,
+            });
+        });
+
         await pool.end();
     },
     sanitizeResources: false,

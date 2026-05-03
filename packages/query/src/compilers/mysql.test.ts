@@ -88,6 +88,36 @@ VALUES
     );
 });
 
+Deno.test("MySqlCompiler compiles JSON fields on update", () => {
+    const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
+
+    const metadata = {
+        data: {
+            version: 1,
+            kind: "test",
+        },
+    };
+
+    const write = store.insert("metadata").one(metadata);
+
+    const compiled = write.compile();
+
+    const expected = `
+INSERT INTO \`metadata\` (\`data\`)
+VALUES (?)
+`.trim();
+
+    assertEquals(
+        compiled.sql,
+        expected,
+        "compiles JSON field mysql write correctly",
+    );
+    assertEquals(
+        compiled.params,
+        [metadata.data],
+    );
+});
+
 Deno.test("MySqlCompiler handles upserts", () => {
     const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
 
@@ -139,6 +169,7 @@ WHERE \`users\`.\`id\` = ?
         "assembles params correctly",
     );
 });
+
 Deno.test("MySqlCompiler handles updates multiple fields", () => {
     const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
 

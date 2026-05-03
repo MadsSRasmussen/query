@@ -12,7 +12,15 @@ export type Comparator = "=" | "<" | ">" | ">=" | "<=" | "!=";
 /**
  * Primitive values that can be stored in a database column.
  */
-export type FieldData = string | number | boolean | null;
+type PrimitiveFieldData = string | number | boolean | null;
+
+/**
+ * Type of values that can be stored in a database column.
+ */
+export type FieldData =
+    | PrimitiveFieldData
+    | { [index: string]: FieldData }
+    | FieldData[];
 
 /**
  * Represents a single database table.

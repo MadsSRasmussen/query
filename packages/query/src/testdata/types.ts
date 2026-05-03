@@ -14,4 +14,10 @@ export type TestDatabase = {
         id: number;
         name: string;
     };
+    metadata: {
+        data: {
+            version: number;
+            kind: string;
+        };
+    };
 };
