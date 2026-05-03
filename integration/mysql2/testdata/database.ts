@@ -8,4 +8,12 @@ export type DB = {
         content: string;
         user_id: number;
     };
+    metadata: {
+        id: number;
+        user_id: number;
+        data: {
+            version: number;
+            kind: string;
+        };
+    };
 };

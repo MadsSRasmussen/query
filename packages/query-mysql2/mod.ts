@@ -39,7 +39,7 @@
  * @module
  */
 
-import type { CompiledMySql } from "@msrass/query/mysql";
+import type { CompiledMySql, SqlValues } from "@msrass/query/mysql";
 import type {
     CompiledQuery,
     DeleteExecutor,
@@ -48,10 +48,6 @@ import type {
     UpdateExecutor,
     WriteExecutor,
 } from "@msrass/query";
-import type { Buffer } from "node:buffer";
-
-type SqlPrimitive = string | number | boolean | null | Buffer | Date;
-type SqlValues = SqlPrimitive | SqlPrimitive[] | Record<string, SqlPrimitive>;
 
 interface MySql2Pool {
     query(sql: string, values?: SqlValues[]): Promise<[unknown, unknown]>;
