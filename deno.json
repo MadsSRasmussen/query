@@ -9,7 +9,7 @@
         "test:packages": "deno test packages",
 
         "test:integration": "deno task test:integration:mysql2",
-        "test:integration:mysql2": "deno task -c integration/mysql2/deno.json test:integration",
+        "test:integration:mysql2": "deno task -c integration-tests/mysql2/deno.json test:integration",
 
         "test:all": "deno task test && deno task test:integration"
     },
@@ -18,6 +18,7 @@
         "./packages/query",
         "./packages/query-mysql2",
 
-        "./integration/mysql2"
+        "./type-tests",
+        "./integration-tests/mysql2"
     ]
 }
