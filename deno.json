@@ -5,8 +5,9 @@
         "semiColons": true
     },
     "tasks": {
-        "test": "deno task test:packages",
+        "test": "deno task test:packages && deno task test:types",
         "test:packages": "deno test packages",
+        "test:types": "deno task -c type-tests/deno.json test:types",
 
         "test:integration": "deno task test:integration:mysql2",
         "test:integration:mysql2": "deno task -c integration-tests/mysql2/deno.json test:integration",

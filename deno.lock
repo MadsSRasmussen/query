@@ -82,7 +82,7 @@
   },
   "workspace": {
     "members": {
-      "integration/mysql2": {
+      "integration-tests/mysql2": {
         "dependencies": [
           "jsr:@std/assert@^1.0.19",
           "npm:mysql2@^3.20.0"
