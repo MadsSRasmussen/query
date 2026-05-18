@@ -6,7 +6,54 @@ import { Write } from "./write.ts";
 import { Update } from "./update.ts";
 import { Delete } from "./delete.ts";
 
-import type { Executor } from "@msrass/query";
+import type { Executor, TransactionalExecutor } from "./executor.ts";
+
+type StoreApi<T extends Database, TCompiled, TExecRes> = {
+    query(table: keyof T): Query<T, ReturnTable<T, []>, TCompiled>;
+    insert<TTB extends keyof T>(table: TTB): Write<T, TCompiled, TExecRes, TTB>;
+    upsert<TTB extends keyof T>(table: TTB): Write<T, TCompiled, TExecRes, TTB>;
+    update<TTB extends keyof T>(
+        table: TTB,
+    ): Update<T, TCompiled, TExecRes, TTB>;
+    delete<TTB extends keyof T>(
+        table: TTB,
+    ): Delete<T, TCompiled, TExecRes, TTB>;
+};
+
+function buildApi<T extends Database, TCompiled, TExecRes>(
+    compiler: Compiler<TCompiled>,
+    executor: Executor<TCompiled, TExecRes>,
+): StoreApi<T, TCompiled, TExecRes> {
+    return {
+        query: (table: keyof T) =>
+            new Query<T, ReturnTable<T, []>, TCompiled>({
+                compiler,
+                executor,
+            }).from(table),
+        insert: <TTB extends keyof T>(table: TTB) =>
+            new Write<T, TCompiled, TExecRes, TTB>({
+                method: "insert",
+                compiler,
+                executor,
+            }).into(table),
+        upsert: <TTB extends keyof T>(table: TTB) =>
+            new Write<T, TCompiled, TExecRes, TTB>({
+                method: "upsert",
+                compiler,
+                executor,
+            }).into(table),
+        update: <TTB extends keyof T>(table: TTB) =>
+            new Update<T, TCompiled, TExecRes, TTB>({
+                compiler,
+                executor,
+            }).into(table),
+        delete: <TTB extends keyof T>(table: TTB) =>
+            new Delete<T, TCompiled, TExecRes, TTB>({
+                compiler,
+                executor,
+            }).from(table),
+    };
+}
 
 /**
  * A class that enables operations on databases.
@@ -98,6 +145,21 @@ export class Store<
         };
     }
 
+    // Overload: TransactionalExecutor → includes transaction()
+    withExecutor<TCompiled, TExecRes>(
+        compiler: Compiler<TCompiled>,
+        executor: TransactionalExecutor<TCompiled, TExecRes>,
+    ): StoreApi<T, TCompiled, TExecRes> & {
+        transaction(
+            fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<void>,
+        ): Promise<void>;
+    };
+    // Overload: plain Executor → no transaction()
+    withExecutor<TCompiled, TExecRes>(
+        compiler: Compiler<TCompiled>,
+        executor: Executor<TCompiled, TExecRes>,
+    ): StoreApi<T, TCompiled, TExecRes>;
+
     /**
      * Returns a newly typed instance of `Store` with a specified compiler and executor.
      * This ensures correct type inference of both compiled and executed queries and insertions.
@@ -106,50 +168,38 @@ export class Store<
      */
     withExecutor<TCompiled, TExecRes>(
         compiler: Compiler<TCompiled>,
-        executor: Executor<TCompiled, TExecRes>,
-    ): {
-        query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled>;
-        insert: <TTB extends keyof T>(
-            table: TTB,
-        ) => Write<T, TCompiled, TExecRes, TTB>;
-        upsert: <TTB extends keyof T>(
-            table: TTB,
-        ) => Write<T, TCompiled, TExecRes, TTB>;
-        update: <TTB extends keyof T>(
-            table: TTB,
-        ) => Update<T, TCompiled, TExecRes, TTB>;
-        delete: <TTB extends keyof T>(
-            table: TTB,
-        ) => Delete<T, TCompiled, TExecRes, TTB>;
-    } {
+        executor:
+            | Executor<TCompiled, TExecRes>
+            | TransactionalExecutor<TCompiled, TExecRes>,
+    ) {
+        const api = buildApi<T, TCompiled, TExecRes>(
+            compiler,
+            executor,
+        );
+
+        if (!("transaction" in executor)) {
+            return api;
+        }
+
         return {
-            query: (table: keyof T) =>
-                new Query<T, ReturnTable<T, []>, TCompiled>({
-                    compiler,
-                    executor,
-                }).from(table),
-            insert: <TTB extends keyof T>(table: TTB) =>
-                new Write<T, TCompiled, TExecRes, TTB>({
-                    method: "insert",
-                    compiler,
-                    executor,
-                }).into(table),
-            upsert: <TTB extends keyof T>(table: TTB) =>
-                new Write<T, TCompiled, TExecRes, TTB>({
-                    method: "upsert",
-                    compiler,
-                    executor,
-                }).into(table),
-            update: <TTB extends keyof T>(table: TTB) =>
-                new Update<T, TCompiled, TExecRes, TTB>({
-                    compiler,
-                    executor,
-                }).into(table),
-            delete: <TTB extends keyof T>(table: TTB) =>
-                new Delete<T, TCompiled, TExecRes, TTB>({
-                    compiler,
-                    executor,
-                }).from(table),
+            ...api,
+            transaction: async (
+                fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<void>,
+            ) => {
+                const txConn = await executor.transaction();
+
+                await txConn.begin();
+
+                try {
+                    await fn(
+                        buildApi<T, TCompiled, TExecRes>(compiler, txConn),
+                    );
+                    await txConn.commit();
+                } catch (err) {
+                    await txConn.rollback();
+                    throw err;
+                }
+            },
         };
     }
 }

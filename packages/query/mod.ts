@@ -47,5 +47,9 @@ export type { WriteCompiler, WriteExecutor } from "./src/write.ts";
 export type { UpdateCompiler, UpdateExecutor } from "./src/update.ts";
 export type { DeleteCompiler, DeleteExecutor } from "./src/delete.ts";
 
-export type { Executor } from "./src/executor.ts";
+export type {
+    Executor,
+    TransactionalExecutor,
+    TransactionExecutor,
+} from "./src/executor.ts";
 export type { Compiler } from "./src/compilers/types.ts";
