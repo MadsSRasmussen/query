@@ -23,3 +23,29 @@ export interface Executor<
     /** A method to execute a delete */
     executeDelete: DeleteExecutor<Compiled, ExecRes>;
 }
+
+export interface TransactionalExecutor<
+    Compiled extends unknown,
+    ExecRes extends unknown,
+> extends Executor<Compiled, ExecRes> {
+    /** A method to return a TransactionExecutor */
+    transaction(): Promise<TransactionExecutor<Compiled, ExecRes>>;
+}
+
+/**
+ * An interface used for transactional executions.
+ * This is used by adapter packages, often operating on a single connection
+ */
+export interface TransactionExecutor<
+    Compiled extends unknown,
+    ExecRes extends unknown,
+> extends Executor<Compiled, ExecRes> {
+    /** A method to begin a transaction */
+    begin(): Promise<void>;
+
+    /** A method to commit a transaction */
+    commit(): Promise<void>;
+
+    /** A method to rollback a transaction */
+    rollback(): Promise<void>;
+}
