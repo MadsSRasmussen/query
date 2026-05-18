@@ -63,8 +63,12 @@ export class Store<
         compiler: Compiler<TCompiled>,
     ): {
         query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled>;
-        insert: (table: keyof T) => Write<T, TCompiled>;
-        upsert: (table: keyof T) => Write<T, TCompiled>;
+        insert: <TTB extends keyof T>(
+            table: TTB,
+        ) => Write<T, TCompiled, unknown, TTB>;
+        upsert: <TTB extends keyof T>(
+            table: TTB,
+        ) => Write<T, TCompiled, unknown, TTB>;
         update: <TTB extends keyof T>(
             table: TTB,
         ) => Update<T, TCompiled, unknown, TTB>;
@@ -77,13 +81,13 @@ export class Store<
                 new Query<T, ReturnTable<T, []>, TCompiled>({
                     compiler,
                 }).from(table),
-            insert: (table: keyof T) =>
-                new Write<T, TCompiled>({
+            insert: <TTB extends keyof T>(table: TTB) =>
+                new Write<T, TCompiled, unknown, TTB>({
                     method: "insert",
                     compiler,
                 }).into(table),
-            upsert: (table: keyof T) =>
-                new Write<T, TCompiled>({
+            upsert: <TTB extends keyof T>(table: TTB) =>
+                new Write<T, TCompiled, unknown, TTB>({
                     method: "upsert",
                     compiler,
                 }).into(table),
@@ -105,8 +109,12 @@ export class Store<
         executor: Executor<TCompiled, TExecRes>,
     ): {
         query: (table: keyof T) => Query<T, ReturnTable<T, []>, TCompiled>;
-        insert: (table: keyof T) => Write<T, TCompiled, TExecRes>;
-        upsert: (table: keyof T) => Write<T, TCompiled, TExecRes>;
+        insert: <TTB extends keyof T>(
+            table: TTB,
+        ) => Write<T, TCompiled, TExecRes, TTB>;
+        upsert: <TTB extends keyof T>(
+            table: TTB,
+        ) => Write<T, TCompiled, TExecRes, TTB>;
         update: <TTB extends keyof T>(
             table: TTB,
         ) => Update<T, TCompiled, TExecRes, TTB>;
@@ -120,14 +128,14 @@ export class Store<
                     compiler,
                     executor,
                 }).from(table),
-            insert: (table: keyof T) =>
-                new Write<T, TCompiled, TExecRes>({
+            insert: <TTB extends keyof T>(table: TTB) =>
+                new Write<T, TCompiled, TExecRes, TTB>({
                     method: "insert",
                     compiler,
                     executor,
                 }).into(table),
-            upsert: (table: keyof T) =>
-                new Write<T, TCompiled, TExecRes>({
+            upsert: <TTB extends keyof T>(table: TTB) =>
+                new Write<T, TCompiled, TExecRes, TTB>({
                     method: "upsert",
                     compiler,
                     executor,
