@@ -16,4 +16,9 @@ export type DB = {
             kind: string;
         };
     };
+    transactions: {
+        id: number;
+        data: string;
+        _invalid: string;
+    };
 };

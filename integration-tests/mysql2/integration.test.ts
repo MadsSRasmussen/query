@@ -3,7 +3,7 @@ import { MySql2Executor } from "@msrass/query-mysql2";
 import { DB } from "./testdata/database.ts";
 import { Store } from "@msrass/query";
 import { MySqlCompiler } from "@msrass/query/mysql";
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 
 Deno.test({
     name: "integration/mysql2",
@@ -175,6 +175,66 @@ Deno.test({
                 data: data,
                 user_id: 1,
             });
+        });
+
+        await t.step("transactions success", async () => {
+            let trans = await store.query("transactions")
+                .pick("transactions.data")
+                .execute();
+            assertEquals(trans.length, 0);
+
+            await store.transaction(async (tx) => {
+                await tx.insert("transactions").one({ data: "first" })
+                    .execute();
+
+                await tx.insert("transactions").one({ data: "second" })
+                    .execute();
+
+                await tx.insert("transactions").one({ data: "third" })
+                    .execute();
+            });
+
+            trans = await store.query("transactions")
+                .pick("transactions.data")
+                .execute();
+            assertEquals(trans.map((t) => t.data), [
+                "first",
+                "second",
+                "third",
+            ]);
+
+            await store.delete("transactions").explicitNoClause()
+                .execute();
+        });
+
+        await t.step("transaction rolls back on error", async () => {
+            let trans = await store.query("transactions")
+                .pick("transactions.data")
+                .execute();
+            assertEquals(trans.length, 0, "initial state contains 0 entries");
+
+            await assertRejects(() =>
+                store.transaction(async (tx) => {
+                    await tx.insert("transactions").one({ data: "first" })
+                        .execute();
+
+                    await tx.insert("transactions").one({ data: "second" })
+                        .execute();
+
+                    await tx.insert("transactions").one({ data: "third" })
+                        .execute();
+
+                    await tx.insert("transactions").one({ _invalid: "oops" })
+                        .execute();
+                })
+            );
+
+            trans = await store.query("transactions")
+                .pick("transactions.data")
+                .execute();
+            assertEquals(trans.length, 0, "rollback contains 0 entries");
+            await store.delete("transactions").explicitNoClause()
+                .execute();
         });
 
         await pool.end();
