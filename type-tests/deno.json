@@ -1,0 +1,5 @@
+{
+    "tasks": {
+        "test:types": "deno check **/*.types.ts"
+    }
+}

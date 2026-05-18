@@ -38,10 +38,14 @@ export type {
     FieldData,
 } from "./src/types.ts";
 
-export type { CompiledQuery, QueryExecutor } from "./src/query.ts";
-export type { WriteExecutor } from "./src/write.ts";
-export type { UpdateExecutor } from "./src/update.ts";
-export type { DeleteExecutor } from "./src/delete.ts";
+export type {
+    CompiledQuery,
+    QueryCompiler,
+    QueryExecutor,
+} from "./src/query.ts";
+export type { WriteCompiler, WriteExecutor } from "./src/write.ts";
+export type { UpdateCompiler, UpdateExecutor } from "./src/update.ts";
+export type { DeleteCompiler, DeleteExecutor } from "./src/delete.ts";
 
 export type { Executor } from "./src/executor.ts";
 export type { Compiler } from "./src/compilers/types.ts";
