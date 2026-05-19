@@ -24,6 +24,10 @@ export interface Executor<
     executeDelete: DeleteExecutor<Compiled, ExecRes>;
 }
 
+/**
+ * An interface used to specify an Executor that supports transactional connections.
+ * This is used by adapter packages to return a transactionable connection.
+ */
 export interface TransactionalExecutor<
     Compiled extends unknown,
     ExecRes extends unknown,

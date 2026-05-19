@@ -112,7 +112,12 @@ export class Store<
         return buildApi<T, TCompiled, unknown>(compiler);
     }
 
-    // Overload: TransactionalExecutor
+    /**
+     * Returns a newly typed instance of `Store` with a specified compiler and executor.
+     * This ensures correct type inference of both compiled and executed queries and insertions.
+     * @param compiler The compiler to use with the instance.
+     * @param executor The executor to use with the instance.
+     */
     withExecutor<TCompiled, TExecRes>(
         compiler: Compiler<TCompiled>,
         executor: TransactionalExecutor<TCompiled, TExecRes>,
@@ -122,18 +127,17 @@ export class Store<
         ): Promise<void>;
     };
 
-    // Overload: Executor
+    /**
+     * Returns a newly typed instance of `Store` with a specified compiler and transactional executor.
+     * This ensures correct type inference of both compiled and executed queries and insertions.
+     * @param compiler The compiler to use with the instance.
+     * @param executor The executor to use with the instance.
+     */
     withExecutor<TCompiled, TExecRes>(
         compiler: Compiler<TCompiled>,
         executor: Executor<TCompiled, TExecRes>,
     ): StoreApi<T, TCompiled, TExecRes>;
 
-    /**
-     * Returns a newly typed instance of `Store` with a specified compiler and executor.
-     * This ensures correct type inference of both compiled and executed queries and insertions.
-     * @param compiler The compiler to use with the instance.
-     * @param executor The executor to use with the instance.
-     */
     withExecutor<TCompiled, TExecRes>(
         compiler: Compiler<TCompiled>,
         executor:
