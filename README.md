@@ -1,6 +1,6 @@
-# Query
+# query
 
-Query is a typesafe query builder with adapters for database connectors.
+query is a typesafe query builder with adapters for database connectors.
 
 _The library is still early in development – api's may contain breaking changes
 in all updates until v1.0.0 is reached._
@@ -138,13 +138,13 @@ The following is a list of available compilers and executors.
 
 | Dialect | Compiler                                              |
 | :------ | :---------------------------------------------------- |
-| mysql   | `import { MySqlCompiler } from "@msrass/query/mysql"` |
+| MySQL   | `import { MySqlCompiler } from "@msrass/query/mysql"` |
 
 #### Executors
 
 | Dialect | Pacakge                | Executor         | tx  |
 | :------ | :--------------------- | :--------------- | :-- |
-| mysql   | `@msrass/query-mysql2` | `MySql2Executor` | yes |
+| MySQL   | `@msrass/query-mysql2` | `MySql2Executor` | yes |
 
 ## Contributing
 
