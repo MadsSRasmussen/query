@@ -28,7 +28,7 @@ deno add jsr:@msrass/query
 This adds the core query package as a dependency to a deno project. And enables
 users to construct queries.
 
-#### Typesage queries
+### Typesafe queries
 
 ```ts
 import { Store } from "@msrass/query";
@@ -46,7 +46,7 @@ const query = store.query("posts") // Typesafe query
     .where("users.id", 1);
 ```
 
-#### Database connection
+### Database connection
 
 A `Store` instance needs a reference to a `Compiler` and an `Executor` to enable 
 execution of reads and writes against a database.
@@ -107,7 +107,7 @@ const posts = await query.execute();
 console.log(posts);
 ```
 
-#### Transactions
+### Transactions
 
 If a `Store.withCompiler` method is called with an instance of a `TransactionalExecutor`, 
 transactions can be performed via the following:
@@ -137,13 +137,13 @@ The following is a list of available compilers and executors.
 #### Compilers
 
 | Dialect | Compiler                                              |
-| ------- | ----------------------------------------------------- |
+| :------ | :---------------------------------------------------- |
 | mysql   | `import { MySqlCompiler } from "@msrass/query/mysql"` |
 
 #### Executors
 
 | Dialect | Pacakge                | Executor         | tx  |
-| ------- | ---------------------- | ---------------- | --- |
+| :------ | :--------------------- | :--------------- | :-- |
 | mysql   | `@msrass/query-mysql2` | `MySql2Executor` | yes |
 
 ## Contributing
