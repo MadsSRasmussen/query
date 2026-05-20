@@ -157,18 +157,19 @@ export class Store<
 
         return {
             ...api,
-            transaction: async (
-                fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<void>,
+            transaction: async <TReturn>(
+                fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<TReturn>,
             ) => {
                 const txConn = await executor.transaction();
 
                 await txConn.begin();
 
                 try {
-                    await fn(
+                    const res = await fn(
                         buildApi<T, TCompiled, TExecRes>(compiler, txConn),
                     );
                     await txConn.commit();
+                    return res;
                 } catch (err) {
                     await txConn.rollback();
                     throw err;
