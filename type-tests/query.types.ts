@@ -45,3 +45,27 @@ const _join_query = mockStore.query("users")
 /* query_enforces_existning_table */
 // @ts-expect-error: table "_not_a_table" does not exist
 const _ = mockStore.query("_not_a_table");
+
+/* query_enforeces_type_in_where */
+mockStore.query("users").where("users.name", "foo");
+
+// @ts-expect-error: "users.name" is of type string
+mockStore.query("users").where("users.name", 123);
+
+/* query_enforces_col_from_selected_on_where */
+mockStore.query("users")
+    .join("organisations", "organisations.id", "users.id")
+    .where("organisations.name", "foo");
+
+mockStore.query("users")
+    // @ts-expect-error: table "organisations" not joined
+    .where("organisations.name", "foo");
+
+/* query_enforces_picks_from_selected */
+mockStore.query("users")
+    .join("user_roles", "user_roles.user_id", "users.id")
+    .pick("user_roles.organisation_id");
+
+mockStore.query("users")
+    // @ts-expect-error: table "organisations" not joined
+    .pick("user_roles.organisation_id");

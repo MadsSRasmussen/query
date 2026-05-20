@@ -43,6 +43,24 @@ export type BaseTable = { [index: string]: FieldData };
 export type Database = { [index: string]: BaseTable };
 
 /**
+ * Returns a subtree of a database containing only the tables in the union TTables.
+ *
+ * @example
+ * ```ts
+ * type DB = {
+ *     users: { id: number, name: string };
+ *     posts: { id: number, content: string, user_id: number };
+ *     messages: { id: number, content: string, user_id: number };
+ * };
+ *
+ * type ST = SubTree<DB, "users" | "posts"> // { users: { ... }, posts: { ... } }
+ */
+export type SubTree<
+    TDatabase extends Database,
+    TTables extends keyof TDatabase,
+> = Pick<TDatabase, TTables>;
+
+/**
  * All the selectable columns in a database, in `'table.column'` format.
  *
  * @example
@@ -56,8 +74,7 @@ export type Database = { [index: string]: BaseTable };
  * ```
  */
 export type Columns<T extends Database> = {
-    [K in keyof T]: K extends string
-        ? (keyof T[K] extends string ? `${K}.${keyof T[K]}` : never)
+    [K in keyof T]: K extends string ? `${K}.${string & keyof T[K]}`
         : never;
 }[keyof T];
 
@@ -75,8 +92,20 @@ export type TableColumns<T extends Database, K extends keyof T> = {
         : never;
 }[keyof T[K]];
 
+/**
+ * Returns a flattened representation of a database
+ *
+ * @example
+ * ```ts
+ * type DB = {
+ *     users: { id: number, name: string };
+ *     posts: { id: number, content: string, user_id: number };
+ * };
+ *
+ * type F = Flat<DB>; // { "users.id": number, "users.name": string, ... }
+ */
 export type Flat<T extends Database> = {
-    [K in keyof T]: T[
+    [K in Columns<T>]: T[
         K extends `${infer K}.${infer _}` ? K : never
     ][
         K extends `${infer _}.${infer C}` ? C : never

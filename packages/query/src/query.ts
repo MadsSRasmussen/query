@@ -3,9 +3,11 @@ import type {
     Columns,
     Comparator,
     Database,
+    FieldData,
     Flat,
     Picks,
     ReturnTable,
+    SubTree,
     TableColumns,
 } from "./types.ts";
 import type { Executor } from "./executor.ts";
@@ -86,6 +88,7 @@ export class Query<
     T extends Database,
     R = ReturnTable<T, []>,
     TCompiled = unknown,
+    TSelected extends keyof T = never,
 > {
     private config: QueryConfig<TCompiled> = {};
 
@@ -94,7 +97,7 @@ export class Query<
     /** The fields that are to be selected in the query. */
     public picks: Picks<T> = [];
     /** The list of where clauses to be applied to the query. */
-    public wheres: [Columns<T>, Flat<T>[Columns<T>], Comparator][] = [];
+    public wheres: [string, FieldData, Comparator][] = [];
     /** The set of tables joined to the main table in the query */
     public joins: [
         keyof T,
@@ -122,9 +125,9 @@ export class Query<
      * Select exactly which fields to query.
      * @param fields A list of valid fields to select. Alias via: `['users.id', 'user_id']`.
      */
-    pick<const K extends Picks<T>>(
+    pick<const K extends Picks<SubTree<T, TSelected>>>(
         ...fields: K
-    ): Query<T, ReturnTable<T, K>, TCompiled> {
+    ): Query<T, ReturnTable<T, K>, TCompiled, TSelected> {
         this.picks = fields;
         return this as Query<T, ReturnTable<T, K>, TCompiled>;
     }
@@ -133,7 +136,7 @@ export class Query<
      * Select a base table to query from.
      * @param table The name of the base table to query from.
      */
-    from(table: keyof T): Query<T, R, TCompiled> {
+    from<K extends keyof T>(table: K): Query<T, R, TCompiled, TSelected | K> {
         this.table = table;
         return this;
     }
@@ -144,12 +147,12 @@ export class Query<
      * @param val The value to compare the column to.
      * @param [comp="="] An optional comparator symbol.
      */
-    where<K extends Columns<T>>(
+    where<K extends keyof Flat<SubTree<T, TSelected>>>(
         col: K,
-        val: Flat<T>[K],
+        val: Flat<SubTree<T, TSelected>>[K],
         comp: Comparator = "=",
-    ): Query<T, R, TCompiled> {
-        this.wheres.push([col, val, comp]);
+    ): Query<T, R, TCompiled, TSelected> {
+        this.wheres.push([col as string, val, comp]);
         return this;
     }
 
@@ -163,9 +166,9 @@ export class Query<
     join<K extends keyof T>(
         table: K,
         first: TableColumns<T, K>,
-        second: Columns<T>,
+        second: Columns<SubTree<T, TSelected>>,
         comp: Comparator = "=",
-    ): Query<T, R, TCompiled> {
+    ): Query<T, R, TCompiled, TSelected | K> {
         this.joins.push([table, first, second, comp]);
         return this;
     }

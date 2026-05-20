@@ -9,7 +9,9 @@ import { Delete } from "./delete.ts";
 import type { Executor, TransactionalExecutor } from "./executor.ts";
 
 type StoreApi<T extends Database, TCompiled, TExecRes> = {
-    query(table: keyof T): Query<T, ReturnTable<T, []>, TCompiled>;
+    query<K extends keyof T>(
+        table: K,
+    ): Query<T, ReturnTable<T, []>, TCompiled, K>;
     insert<TTB extends keyof T>(table: TTB): Write<T, TCompiled, TExecRes, TTB>;
     upsert<TTB extends keyof T>(table: TTB): Write<T, TCompiled, TExecRes, TTB>;
     update<TTB extends keyof T>(
@@ -25,8 +27,8 @@ function buildApi<T extends Database, TCompiled, TExecRes>(
     executor?: Executor<TCompiled, TExecRes>,
 ): StoreApi<T, TCompiled, TExecRes> {
     return {
-        query: (table: keyof T) =>
-            new Query<T, ReturnTable<T, []>, TCompiled>({
+        query: <K extends keyof T>(table: K) =>
+            new Query<T, ReturnTable<T, []>, TCompiled, K>({
                 compiler,
                 executor,
             }).from(table),
