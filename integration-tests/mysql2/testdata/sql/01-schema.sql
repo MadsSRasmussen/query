@@ -3,12 +3,15 @@ SET sql_mode = 'STRICT_ALL_TABLES';
 START TRANSACTION;
 
 DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS metadata;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,
@@ -17,11 +20,17 @@ CREATE TABLE posts (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-DROP TABLE IF EXISTS metadata;
 CREATE TABLE metadata (
     id INT AUTO_INCREMENT PRIMARY KEY,
     data JSON,
-    user_id INT NOT NULL
+    user_id INT NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data VARCHAR(255)
 );
 
 COMMIT;
