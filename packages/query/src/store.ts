@@ -124,9 +124,9 @@ export class Store<
         compiler: Compiler<TCompiled>,
         executor: TransactionalExecutor<TCompiled, TExecRes>,
     ): StoreApi<T, TCompiled, TExecRes> & {
-        transaction(
-            fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<void>,
-        ): Promise<void>;
+        transaction<TReturn>(
+            fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<TReturn>,
+        ): Promise<TReturn>;
     };
 
     /**
@@ -159,7 +159,7 @@ export class Store<
             ...api,
             transaction: async <TReturn>(
                 fn: (tx: StoreApi<T, TCompiled, TExecRes>) => Promise<TReturn>,
-            ) => {
+            ): Promise<TReturn> => {
                 const txConn = await executor.transaction();
 
                 await txConn.begin();
