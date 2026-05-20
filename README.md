@@ -48,11 +48,12 @@ const query = store.query("posts") // Typesafe query
 
 ### Database connection
 
-A `Store` instance needs a reference to a `Compiler` and an `Executor` to enable 
+A `Store` instance needs a reference to a `Compiler` and an `Executor` to enable
 execution of reads and writes against a database.
 
-To add a specific instance of an executor to the project, a seperate adapter package must be installed.
-The following is an example install command installing the core library and a mysql2 adapter:
+To add a specific instance of an executor to the project, a seperate adapter
+package must be installed. The following is an example install command
+installing the core library and a mysql2 adapter:
 
 ```bash
 deno add jsr:@msrass/query jsr:@msrass/query-mysql2 npm:mysql2
@@ -109,8 +110,8 @@ console.log(posts);
 
 ### Transactions
 
-If a `Store.withCompiler` method is called with an instance of a `TransactionalExecutor`, 
-transactions can be performed via the following:
+If a `Store.withCompiler` method is called with an instance of a
+`TransactionalExecutor`, transactions can be performed via the following:
 
 ```ts
 // ...continuation of previous example
@@ -122,13 +123,13 @@ await store.transaction((tx) => {
 
     await tx.insert("posts").one({
         user_id: res.id as number,
-        content: "foo, bar and baz!"
-    }).execute()
-})
+        content: "foo, bar and baz!",
+    }).execute();
+});
 ```
 
-Please note that **the transaction rollback mechanism relies on the callback function 
-passed to `Store.transaction` throwing an error.**
+Please note that **the transaction rollback mechanism relies on the callback
+function passed to `Store.transaction` throwing an error.**
 
 ### Adapters
 
