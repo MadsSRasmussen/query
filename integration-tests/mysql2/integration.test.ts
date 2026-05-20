@@ -66,7 +66,7 @@ Deno.test({
 
             const [post] = await store.query("posts")
                 .pick("posts.content", "posts.user_id")
-                .where("posts.id", result.id)
+                .where("posts.id", result.id as number)
                 .execute();
 
             assertEquals(post.content, "content:1");
@@ -114,7 +114,7 @@ Deno.test({
 
             const [post] = await store.query("posts")
                 .pick("posts.id", "posts.content", "posts.user_id")
-                .where("posts.id", firstRes.id)
+                .where("posts.id", firstRes.id as number)
                 .execute();
 
             assertEquals(post.content, "content:1:updated");
@@ -167,7 +167,7 @@ Deno.test({
 
             const [metadata] = await store.query("metadata")
                 .pick("metadata.id", "metadata.user_id", "metadata.data")
-                .where("metadata.id", res.id)
+                .where("metadata.id", res.id as number)
                 .execute();
 
             assertEquals(metadata, {
