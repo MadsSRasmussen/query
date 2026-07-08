@@ -6,11 +6,11 @@ import type { Equal, Expect } from "./testutils.types.ts";
 type _test_query_infers_columns = Expect<
     Equal<
         Awaited<typeof _users_query>,
-        { name: string; email: string }[]
+        { name: string; email: string; created_at: Date }[]
     >
 >;
 const _users_query = mockStore.query("users")
-    .pick("users.name", "users.email")
+    .pick("users.name", "users.email", "users.created_at")
     .execute();
 
 type _test_query_infers_column_alias = Expect<
