@@ -15,10 +15,16 @@ export type Comparator = "=" | "<" | ">" | ">=" | "<=" | "!=";
 type PrimitiveFieldData = string | number | boolean | null;
 
 /**
+ * Domain specific values that represent the Javascript version of a data type
+ */
+type DomainSpecificFieldData = Date;
+
+/**
  * Type of values that can be stored in a database column.
  */
 export type FieldData =
     | PrimitiveFieldData
+    | DomainSpecificFieldData
     | { [index: string]: FieldData }
     | FieldData[];
 

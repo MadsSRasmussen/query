@@ -9,7 +9,8 @@ CONTAINER_ID=$(docker run -d --name mysql-test \
   --health-cmd="mysql -u root -proot test -e 'SELECT 1'" \
   --health-interval=2s \
   --health-retries=10 \
-  mysql:8)
+  mysql:8 \
+  --default-time-zone=+00:00)
 
 echo "Started container $CONTAINER_ID"
 echo "Waiting for mysql-test to become healthy..."

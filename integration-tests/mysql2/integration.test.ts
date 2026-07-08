@@ -1,9 +1,9 @@
 import mysql2 from "mysql2/promise";
 import { MySql2Executor } from "@msrass/query-mysql2";
-import { DB } from "./testdata/database.ts";
+import { DB, DefaultDate } from "./testdata/database.ts";
 import { Store } from "@msrass/query";
 import { MySqlCompiler } from "@msrass/query/mysql";
-import { assertEquals, assertRejects } from "@std/assert";
+import { assert, assertEquals, assertRejects } from "@std/assert";
 
 Deno.test({
     name: "integration/mysql2",
@@ -13,6 +13,7 @@ Deno.test({
             user: "root",
             password: "root",
             database: "test",
+            timezone: "Z",
         });
 
         const compiler = new MySqlCompiler();
@@ -22,11 +23,22 @@ Deno.test({
         await t.step("query all users", async () => {
             const results = await store
                 .query("users")
-                .pick("users.id", "users.name")
+                .pick("users.id", "users.name", "users.created_at")
                 .execute();
 
-            assertEquals(results[0], { id: 1, name: "root" });
-            assertEquals(results[1], { id: 2, name: "default" });
+            assertEquals(results[0], {
+                id: 1,
+                name: "root",
+                created_at: DefaultDate,
+            });
+
+            const { created_at, ...rest } = results[1];
+            assertEquals(rest, {
+                id: 2,
+                name: "default",
+            });
+            assert(created_at instanceof Date);
+            assert(!isNaN(created_at.getTime()));
         });
 
         await t.step("query posts for user with id 1", async () => {
@@ -38,6 +50,7 @@ Deno.test({
                     "users.name",
                     "posts.content",
                     "posts.id",
+                    "posts.created_at",
                 )
                 .where("users.id", 1)
                 .execute();
@@ -47,30 +60,36 @@ Deno.test({
                 name: "root",
                 content: "content:root:1",
                 id: 1,
+                created_at: DefaultDate,
             });
             assertEquals(results[1], {
                 user_id: 1,
                 name: "root",
                 content: "content:root:2",
                 id: 2,
+                created_at: DefaultDate,
             });
         });
 
         await t.step("insert single post", async () => {
+            const now = new Date(Math.floor(Date.now() / 1000) * 1000); // MySQL TIMERSTAMP truncates to s
+
             const result = await store.insert("posts").one({
                 content: "content:1",
                 user_id: 1,
+                created_at: now,
             }).execute();
 
             assertEquals(result.id, 5);
 
             const [post] = await store.query("posts")
-                .pick("posts.content", "posts.user_id")
+                .pick("posts.content", "posts.user_id", "posts.created_at")
                 .where("posts.id", result.id as number)
                 .execute();
 
             assertEquals(post.content, "content:1");
             assertEquals(post.user_id, 1);
+            assertEquals(post.created_at, now);
         });
 
         await t.step("insert multiple posts", async () => {
