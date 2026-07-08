@@ -116,7 +116,7 @@ If a `Store.withCompiler` method is called with an instance of a
 ```ts
 // ...continuation of previous example
 
-await store.transaction((tx) => {
+await store.transaction(async (tx) => {
     const res = await tx.insert("users") // tx is a typed api
         .one({ name: "John Smith" })
         .execute();
@@ -149,11 +149,7 @@ The following is a list of available compilers and executors.
 
 ## Contributing
 
-_The library is still very early in development..._
-
-The following features are prioritized:
-
-- Addition of insert and delete functionality
+Contributions to the library are welcome.
 
 ### Testing
 
