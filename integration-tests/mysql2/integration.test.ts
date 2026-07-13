@@ -61,6 +61,19 @@ Deno.test({
             },
         );
 
+        await t.step("query with limit and offset", async () => {
+            const partial = store
+                .query("posts")
+                .pick("posts.id")
+                .order("posts.id", "desc");
+
+            const first = await partial.limit(2).execute();
+            const second = await partial.limit(2, 2).execute();
+
+            assertEquals(first.map((res) => res.id), [4, 3]);
+            assertEquals(second.map((res) => res.id), [2, 1]);
+        });
+
         await t.step("query posts for user with id 1", async () => {
             const results = await store
                 .query("posts")

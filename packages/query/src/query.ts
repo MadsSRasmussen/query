@@ -113,6 +113,9 @@ export class Query<
     /** The list of order by clauses to be applied to the query. */
     public orders: [string, OrderDirection][] = [];
 
+    /** A limit and associated offset of the returned resutls */
+    public frame: [number, number] | null = null;
+
     /**
      * Create a new `Query` instance.
      * Optionally include a compiler and an executor in the configuration passed to the constructor.
@@ -173,6 +176,16 @@ export class Query<
         dir: OrderDirection = "asc",
     ): Query<T, R, TCompiled, TSelected> {
         this.orders.push([col, dir]);
+        return this;
+    }
+
+    /**
+     * Specify a limit to the rows returned and optionally an offset.
+     * @param lim The number of rows to return
+     * @param [offset=0] The offset to return the first row from
+     */
+    limit(lim: number, offset: number = 0): Query<T, R, TCompiled, TSelected> {
+        this.frame = [lim, offset];
         return this;
     }
 
