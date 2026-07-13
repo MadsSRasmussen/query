@@ -89,6 +89,11 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
             queryBits.push(`ORDER BY ${orders.join(", ")}`);
         }
 
+        if (query.scope) {
+            const [limit, offset] = query.scope;
+            queryBits.push(`LIMIT ${limit} OFFSET ${offset}`);
+        }
+
         return {
             sql: queryBits.join("\n"),
             params: params as SqlValues[],

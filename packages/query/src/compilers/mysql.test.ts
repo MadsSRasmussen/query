@@ -34,7 +34,8 @@ WHERE \`users\`.\`id\` = ?
         .join("companies", "companies.id", "users.company_id")
         .pick("users.name", ["companies.name", "company_name"])
         .order("users.company_id")
-        .order("users.id", "desc");
+        .order("users.id", "desc")
+        .limit(2, 4);
 
     compiled = query.compile();
 
@@ -42,6 +43,7 @@ WHERE \`users\`.\`id\` = ?
 SELECT \`users\`.\`name\`, \`companies\`.\`name\` AS company_name FROM \`users\`
 JOIN \`companies\` ON \`companies\`.\`id\` = \`users\`.\`company_id\`
 ORDER BY \`users\`.\`company_id\` ASC, \`users\`.\`id\` DESC
+LIMIT 2 OFFSET 4
 `.trim();
 
     assertEquals(
