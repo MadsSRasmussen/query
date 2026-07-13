@@ -61,6 +61,15 @@ mockStore.query("users")
     // @ts-expect-error: table "organisations" not joined
     .where("organisations.name", "foo");
 
+/* query_envorces_col_from_selected_on_order */
+mockStore.query("users")
+    .join("organisations", "organisations.id", "users.id")
+    .order("organisations.name");
+
+mockStore.query("users")
+    // @ts-expect-error: table "organisations" not joined
+    .order("organisations.name");
+
 /* query_enforces_picks_from_selected */
 mockStore.query("users")
     .join("user_roles", "user_roles.user_id", "users.id")
