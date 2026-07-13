@@ -23,6 +23,7 @@ import type { QueryCompiler } from "../query.ts";
 import type { WriteCompiler } from "../write.ts";
 import type { UpdateCompiler } from "../update.ts";
 import type { DeleteCompiler } from "../delete.ts";
+import type { OrderDirection } from "../types.ts";
 import type { Compiler } from "./types.ts";
 
 export type SqlPrimitive = string | number | boolean | null | Buffer | Date;
@@ -78,6 +79,14 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
             );
             params = params.concat(whereParams);
             queryBits.push(wheres);
+        }
+
+        if (query.orders.length > 0) {
+            const orders = query.orders.map(
+                ([col, dir]) =>
+                    `${this.quoteCol(col)} ${this.mapOrderDirection(dir)}`,
+            );
+            queryBits.push(`ORDER BY ${orders.join(", ")}`);
         }
 
         return {
@@ -194,6 +203,15 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
     private quoteCol(input: string): string {
         const [table, col] = input.split(".");
         return `${this.quote(table)}.${this.quote(col)}`;
+    }
+
+    private mapOrderDirection(input: OrderDirection): string {
+        switch (input) {
+            case "asc":
+                return "ASC";
+            case "desc":
+                return "DESC";
+        }
     }
 
     private wheres(

@@ -9,6 +9,9 @@ export type UnionToIntersection<U> =
  */
 export type Comparator = "=" | "<" | ">" | ">=" | "<=" | "!=";
 
+/** Supported order directions */
+export type OrderDirection = "asc" | "desc";
+
 /**
  * Primitive values that can be stored in a database column.
  */

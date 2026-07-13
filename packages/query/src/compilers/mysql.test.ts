@@ -7,14 +7,14 @@ import { Store } from "../store.ts";
 Deno.test("MySqlCompiler compiles Query class correctly", () => {
     const store = new Store<TestDatabase>().withCompiler(new MySqlCompiler());
 
-    const query = store.query("users")
+    let query = store.query("users")
         .join("companies", "companies.id", "users.company_id")
         .pick("users.name", ["companies.name", "company_name"])
         .where("users.id", 1);
 
-    const compiled = query.compile();
+    let compiled = query.compile();
 
-    const expected = `
+    let expected = `
 SELECT \`users\`.\`name\`, \`companies\`.\`name\` AS company_name FROM \`users\`
 JOIN \`companies\` ON \`companies\`.\`id\` = \`users\`.\`company_id\`
 WHERE \`users\`.\`id\` = ?
@@ -29,6 +29,26 @@ WHERE \`users\`.\`id\` = ?
 
     assertEquals(compiled.sql, expected, "compiles mysql query correctly");
     assertEquals(compiled.params, [1], "assembles params correctly");
+
+    query = store.query("users")
+        .join("companies", "companies.id", "users.company_id")
+        .pick("users.name", ["companies.name", "company_name"])
+        .order("users.company_id")
+        .order("users.id", "desc");
+
+    compiled = query.compile();
+
+    expected = `
+SELECT \`users\`.\`name\`, \`companies\`.\`name\` AS company_name FROM \`users\`
+JOIN \`companies\` ON \`companies\`.\`id\` = \`users\`.\`company_id\`
+ORDER BY \`users\`.\`company_id\` ASC, \`users\`.\`id\` DESC
+`.trim();
+
+    assertEquals(
+        compiled.sql,
+        expected,
+        "compiles query with order statements",
+    );
 });
 
 Deno.test("MySqlCompiler compiles Write class correctly", () => {

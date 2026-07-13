@@ -41,6 +41,26 @@ Deno.test({
             assert(!isNaN(created_at.getTime()));
         });
 
+        await t.step(
+            "query all posts with multiple order statements",
+            async () => {
+                const results = await store
+                    .query("posts")
+                    .join("users", "users.id", "posts.user_id")
+                    .pick(["users.id", "user_id"], ["posts.id", "post_id"])
+                    .order("users.id")
+                    .order("posts.id", "desc")
+                    .execute();
+
+                assertEquals(results.slice(0, 4), [
+                    { post_id: 2, user_id: 1 },
+                    { post_id: 1, user_id: 1 },
+                    { post_id: 4, user_id: 2 },
+                    { post_id: 3, user_id: 2 },
+                ]);
+            },
+        );
+
         await t.step("query posts for user with id 1", async () => {
             const results = await store
                 .query("posts")

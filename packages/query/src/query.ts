@@ -5,6 +5,7 @@ import type {
     Database,
     FieldData,
     Flat,
+    OrderDirection,
     Picks,
     ReturnTable,
     SubTree,
@@ -94,10 +95,7 @@ export class Query<
 
     /** The base table to query from. */
     public table: (keyof T) | null = null;
-    /** The fields that are to be selected in the query. */
-    public picks: Picks<T> = [];
-    /** The list of where clauses to be applied to the query. */
-    public wheres: [string, FieldData, Comparator][] = [];
+
     /** The set of tables joined to the main table in the query */
     public joins: [
         keyof T,
@@ -105,6 +103,15 @@ export class Query<
         Columns<T>,
         Comparator,
     ][] = [];
+
+    /** The fields that are to be selected in the query. */
+    public picks: Picks<T> = [];
+
+    /** The list of where clauses to be applied to the query. */
+    public wheres: [string, FieldData, Comparator][] = [];
+
+    /** The list of order by clauses to be applied to the query. */
+    public orders: [string, OrderDirection][] = [];
 
     /**
      * Create a new `Query` instance.
@@ -152,7 +159,20 @@ export class Query<
         val: Flat<SubTree<T, TSelected>>[K],
         comp: Comparator = "=",
     ): Query<T, R, TCompiled, TSelected> {
-        this.wheres.push([col as string, val, comp]);
+        this.wheres.push([col, val, comp]);
+        return this;
+    }
+
+    /**
+     * Specify a column and optionally direction to order the results by.
+     * @param col The column to order the results by
+     * @param [comp="asc"] The direction to order by
+     */
+    order<K extends keyof Flat<SubTree<T, TSelected>>>(
+        col: K,
+        dir: OrderDirection = "asc",
+    ): Query<T, R, TCompiled, TSelected> {
+        this.orders.push([col, dir]);
         return this;
     }
 
