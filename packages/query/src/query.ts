@@ -114,7 +114,7 @@ export class Query<
     public orders: [string, OrderDirection][] = [];
 
     /** A limit and associated offset of the returned resutls */
-    public scope: [number, number] | null = null;
+    public frame: [number, number] | null = null;
 
     /**
      * Create a new `Query` instance.
@@ -185,7 +185,7 @@ export class Query<
      * @param [offset=0] The offset to return the first row from
      */
     limit(lim: number, offset: number = 0): Query<T, R, TCompiled, TSelected> {
-        this.scope = [lim, offset];
+        this.frame = [lim, offset];
         return this;
     }
 
