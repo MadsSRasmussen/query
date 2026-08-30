@@ -1,6 +1,6 @@
 import type { Compiler } from "./compilers/types.ts";
 import type { Executor } from "./executor.ts";
-import type { Database, UnionToIntersection } from "./types.ts";
+import type { Database, MergeUnion } from "./types.ts";
 
 type WriteMethod = "insert" | "upsert";
 
@@ -110,7 +110,7 @@ export class Write<
      * @param data The data to be inserted into the table.
      */
     arr<T extends Partial<DB[TB]>>(
-        data: T[] & Array<UnionToIntersection<T>>,
+        data: T[] & Array<MergeUnion<T>>,
     ): Write<DB, TCompiled, R, TB> {
         this.data = data;
         return this;

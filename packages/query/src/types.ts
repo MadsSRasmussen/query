@@ -1,9 +1,14 @@
 export type { Query } from "./query.ts";
 
-export type UnionToIntersection<U> =
-    (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void
-        ? I
-        : never;
+type UnionKeys<U> = U extends unknown ? keyof U : never;
+
+type PickUnion<U, K extends PropertyKey> = U extends Record<K, unknown> ? U[K]
+    : never;
+
+export type MergeUnion<U> = {
+    [K in UnionKeys<U>]: PickUnion<U, K>;
+};
+
 /**
  * Supported comparison operations for clauses.
  */
