@@ -38,7 +38,7 @@ mockStore.insert("users").arr([{
     email: "mail@example.com",
 }]);
 
-/* inser_enforces_identical_in_arr */
+/* insert_enforces_identical_in_arr */
 // @ts-expect-error: field "email" only exists in one element
 mockStore.insert("users").arr(data);
 
@@ -48,3 +48,14 @@ const data = [{
     name: "bar",
     email: "mail@example.com",
 }];
+
+/* insert_different_correct_union_values_in_arr */
+mockStore.insert("user_roles").arr([{
+    organisation_id: 1,
+    user_id: 1,
+    role: "default",
+}, {
+    organisation_id: 1,
+    user_id: 2,
+    role: "admin",
+}]);
