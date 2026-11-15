@@ -128,7 +128,7 @@ export class MySqlCompiler implements Compiler<CompiledMySql> {
         if (write.method == "upsert") {
             writeBits.push("ON DUPLICATE KEY UPDATE");
             const updates = keys.map((key) =>
-                `${key} = VALUES(${this.quote(key)})`
+                `${this.quote(key)} = VALUES(${this.quote(key)})`
             );
             writeBits.push(updates.join(",\n"));
         }

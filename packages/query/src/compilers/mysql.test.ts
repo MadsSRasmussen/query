@@ -154,8 +154,8 @@ Deno.test("MySqlCompiler handles upserts", () => {
 INSERT INTO \`users\` (\`id\`, \`name\`)
 VALUES (?, ?)
 ON DUPLICATE KEY UPDATE
-id = VALUES(\`id\`),
-name = VALUES(\`name\`)
+\`id\` = VALUES(\`id\`),
+\`name\` = VALUES(\`name\`)
 `.trim();
 
     assertEquals(compiled.sql, expected, "compiles mysql write correctly");
